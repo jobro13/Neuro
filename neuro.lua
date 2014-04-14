@@ -6,6 +6,9 @@ local neuron = require "require/neuron"
 -- network 
 local network = require "require/network"
 
+-- genetics
+local genetics = require "require/genetics"
+
 -- library
 
 local neurolib = {}
