@@ -1,43 +1,42 @@
-
-
 -- neuron
-local neuron = require "require/neuron"
+local neuron = require "Neuro/src/Neuron"
 
--- network 
-local network = require "require/network"
+-- Network
+local network = require "Neuro/src/NeuralNet"
 
--- genetics
-local genetics = require "require/genetics"
+-- Network Layer
+local networklayer = require "Neuro/src/NeuronLayer"
+
+
+-- genetics [lib]
+local genetics = require "Neuro/src/genetics"
+
+-- population manager
+local population = require "Neuro/src/population"
+
+local neuro = {}
 
 -- library
 
+neuro.classes = {
+neuron = neuron, 
+networklayer = networklayer,
+network = network, 
+population = population, 
+} 
+
+-- safe output
 local neurolib = {}
 
-
-
-
-function neurolib.createneuron()
-	return neuron.new()
-end
-
-function neurolib.createnetwork()
-	return network.new()
-end
-
-function neurolib.network()
-	return neurolib.createnetwork()
-end 
-
-function neurolib.neuron()
-	return neurolib.createneuron()
-end 
-
-function neurolib.new(what) 
-	if what == "neuron" then 
-		return neurolib.createneuron()
-	elseif what == "network" then 
-		return neurolib.createnetwork()
+function neurolib.new(what, ...) 
+	assert(type(what) == "string", "ClassName must be a string")
+	if neuro.classes[what:lower()] then 
+		return neuro.classes[what.lower()].new(...)
 	else 
 		error("Could not create object type: "..tostring(what).." from neuro.")
 	end 
 end 
+
+neurolib.genetics = genetics 
+
+return neurolib

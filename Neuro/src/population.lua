@@ -1,6 +1,6 @@
 local population = {}
 
-local genetics = require "require/genetics"
+local genetics = require "Neuro/src/genetics"
 
 function population.new()
 	local new = {}
@@ -17,7 +17,7 @@ end
 -- Adds a Brain to the population. (type: NeuralNetwork)
 function population:AddBrain(NeuralNetwork)	
 	self.Population = self.Population + 1 
-	table.insert(self.Brians, NeuralNetwork)
+	table.insert(self.Brains, NeuralNetwork)
 end 
 
 
@@ -81,3 +81,5 @@ function population:GetChromosome()
 		end 
 	end
 end  
+
+return population

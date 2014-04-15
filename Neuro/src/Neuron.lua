@@ -16,3 +16,5 @@ function Neuron.new(numInputs)
 
 	return neuron
 end
+
+return Neuron

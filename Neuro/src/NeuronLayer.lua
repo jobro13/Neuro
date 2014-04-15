@@ -12,3 +12,5 @@ function NeuronLayer.new(numNeurons, numInputsPerNeuron)
 
 	return neuronLayer
 end
+
+return NeuronLayer
