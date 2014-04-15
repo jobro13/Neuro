@@ -23,14 +23,25 @@ end
 
 -- Evolves the population
 -- DOES NOT CREATE NEW OBJECTS BUT INSTEAD WRITES TO THE OLD
+-- Evolves every creature with random mums and dads
 function population:Evolve()
-	local mum, dad = self:GetChromosome(), self:GetChromosome()
-	local chrom_1, chrom_2 = mum:getWeights(), dad:getWeights() 
+	for brain = 1, #self.Brains,2 do 
 
-	local chrom_new_1, chrom_new_2 = genetics.meiosis(chrom_1, chrom_2)
+		local mum, dad = self:GetChromosome(), self:GetChromosome()
+		local chrom_1, chrom_2 = mum:getWeights(), dad:getWeights() 
+
+		local chrom_new_1, chrom_new_2 = genetics.meiosis(chrom_1, chrom_2)
 		
-	mum:putWeights(chrom_new_1)
-	dad:putWeights(chrom_new_2)
+		local baby1 = self.Brains[brain]
+		local baby2 = self.Brains[brain+1]
+
+		baby1:putWeights(chrom_new_1)
+		
+		if baby2 then 
+			baby2:putWeights(chrom_new_2)
+		end
+
+	end 
 end 
 
 -- returns the best brain in the population
