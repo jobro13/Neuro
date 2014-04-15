@@ -2,12 +2,14 @@ local genetics = {}
 
 genetics.settings = {
 	-- How much cross overs happen
-	cross_over_rate = 0.2,
+	cross_over_rate = 0.5,
 	-- How much mutations happen
 	mutation_rate = 0.1,
 	-- The maximum mutex per mutation
 	mutation_mutex_max = 0.3
 }
+
+genetics.__index = genetics
 
 function genetics.crossover(mum_c, dad_c)
 	local do_crossover = math.random() < genetics.settings.cross_over_rate 
@@ -19,7 +21,7 @@ function genetics.crossover(mum_c, dad_c)
 			error("Weight lenght error, chromosome length not equal")
 		else 
 			local cross_over_point = math.random(2, len-1) -- No need to cross over at start or end 
-			
+
 			local function get(chromosome_1, chromosome_2)
 				local out = {}
 				for weight_number, weight in pairs(chromosome_1) do 
@@ -42,8 +44,8 @@ end
 function genetics.mutate(chromosome)
 	local new = {}
 	for weight_number, weight in pairs(chromosome) do 
-		if math.random() < genetics.mutation_rate then 
-			new[weight_number] = weight + genetics.mutation_mutex_max * (1 - 2 *math.random())
+		if math.random() < genetics.settings.mutation_rate then 
+			new[weight_number] = weight + genetics.settings.mutation_mutex_max * (1 - 2 *math.random())
 		else 
 			new[weight_number] = weight 
 		end 

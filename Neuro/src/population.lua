@@ -1,6 +1,6 @@
 local population = {}
-
-local genetics = require "Neuro/src/genetics"
+population.__index = population
+local genetics = require("Neuro/src/genetics")
 
 function population.new()
 	local new = {}
@@ -28,7 +28,7 @@ function population:Evolve()
 	local chrom_1, chrom_2 = mum:getWeights(), dad:getWeights() 
 
 	local chrom_new_1, chrom_new_2 = genetics.meiosis(chrom_1, chrom_2)
-
+		
 	mum:putWeights(chrom_new_1)
 	dad:putWeights(chrom_new_2)
 end 
@@ -38,9 +38,9 @@ function population:GetBest()
 	local best = -math.huge 
 	local cbest = nil
 	for brain_number, brain in pairs(self.Brains) do 
-		if brain.Fitness > best then 
+		if brain.fitness > best then 
 			cbest = brain 
-			best = brain.Fitness
+			best = brain.fitness
 		end 
 	end 
 	return cbest 
@@ -53,7 +53,7 @@ function population:GetWorst()
 	for brain_number, brain in pairs(self.Brains) do 
 		if brain.Fitness < worst then 
 			cworst = brain 
-			worst = brain.Fitness
+			worst = brain.fitness
 		end 
 	end 
 	return cworst
@@ -63,10 +63,16 @@ end
 function population:GetTotalFitness()
 	local tf = 0 
 	for brain_number, brain in pairs(self.Brains) do 
-		tf = tf + brain.Fitness
+		tf = tf + brain.fitness
 	end
 	return tf 
 end 
+
+function population:resetFitness()
+	for _, brain in pairs(self.Brains) do
+		brain.fitness = 0
+	end	
+end
 
 -- Returns a "Chromosome" from the population via a random roulette wheel style
 -- Note: Chromosome is a table of weights of all nodes.
@@ -75,7 +81,7 @@ function population:GetChromosome()
 	local fitness_wanted = math.random() * total_fitness
 	local fitness_got = 0
 	for brain_number, brain in pairs(self.Brains) do 
-		fitness_got = fitness_got + brain.Fitness 
+		fitness_got = fitness_got + brain.fitness 
 		if fitness_got >= fitness_wanted then 
 			return brain 
 		end 

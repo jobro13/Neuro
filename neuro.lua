@@ -31,7 +31,7 @@ local neurolib = {}
 function neurolib.new(what, ...) 
 	assert(type(what) == "string", "ClassName must be a string")
 	if neuro.classes[what:lower()] then 
-		return neuro.classes[what.lower()].new(...)
+		return neuro.classes[what:lower()].new(...)
 	else 
 		error("Could not create object type: "..tostring(what).." from neuro.")
 	end 
