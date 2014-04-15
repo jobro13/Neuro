@@ -17,7 +17,7 @@ end
 -- Adds a Brain to the population. (type: NeuralNetwork)
 function population:AddBrain(NeuralNetwork)	
 	self.Population = self.Population + 1 
-	table.insert(self.Brians, NeuralNetwork)
+	table.insert(self.Brains, NeuralNetwork)
 end 
 
 
