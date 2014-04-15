@@ -1,3 +1,5 @@
+math.randomseed(os.time())
+
 -- neuron
 local neuron = require "Neuro/src/Neuron"
 
