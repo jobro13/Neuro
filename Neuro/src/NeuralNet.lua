@@ -13,11 +13,14 @@ function NeuralNet.new(numInputs, numOutputs, numHiddenLayers, neuronsPerHiddenL
 	neuralNet.fitness = 0
 	neuralNet.layers = {}
 
+
+	table.insert(neuralNet.layers, NeuronLayer.new(neuronsPerHiddenLayer, numInputs))
 	for layernum = 1, numHiddenLayers do
-		table.insert(neuralNet.layers, NeuronLayer.new(neuronsPerHiddenLayer, numInputs))
+ 		table.insert(neuralNet.layers, NeuronLayer.new(neuronsPerHiddenLayer, neuronsPerHiddenLayer))
 	end
 	table.insert(neuralNet.layers,  NeuronLayer.new(numOutputs, numInputs))
-	
+
+
 	return neuralNet
 end
 
