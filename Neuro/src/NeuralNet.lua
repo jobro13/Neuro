@@ -16,6 +16,11 @@ function NeuralNet.new(numInputs, numOutputs, numHiddenLayers, neuronsPerHiddenL
 	return neuralNet
 end
 
+function NeuralNet:IncreaseFitness(delta)
+	local delta = delta or 1
+	self.fitness = self.fitness + delta 
+end
+
 function NeuralNet:getWeights()
 	local weights = {}
 	
@@ -95,6 +100,8 @@ end
 function NeuralNet.sigmoid(input)
 	return 1 / (1 + math.exp(input))
 end
+
+
 
 
 
