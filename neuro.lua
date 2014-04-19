@@ -1,20 +1,25 @@
-math.randomseed(os.time())
+local old_require = require 
+function require(what)
+	if game and script and Workspace and Instance and Instance.new and game.PlaceId then 
+		local wanted = what:match("/(.*)$")
+		return old_require(script:FindFirstChild(wanted))
+	else
+		return old_require(what)
+	end
+end 
 
 -- neuron
-local neuron = require "Neuro/src/Neuron"
+local neuron = require("Neuro/src/Neuron")
 
 -- Network
-local network = require "Neuro/src/NeuralNet"
-
--- Network Layer
-local networklayer = require "Neuro/src/NeuronLayer"
+local network = require ("Neuro/src/NeuralNet")
 
 
 -- genetics [lib]
-local genetics = require "Neuro/src/genetics"
+local genetics = require ("Neuro/src/genetics")
 
 -- population manager
-local population = require "Neuro/src/population"
+local population = require ("Neuro/src/population")
 
 local neuro = {}
 
@@ -32,7 +37,7 @@ local neurolib = {}
 
 function neurolib.new(what, ...) 
 	assert(type(what) == "string", "ClassName must be a string")
-	if neuro.classes[what:lower()] then 
+	if neuro.classes[what:lower()] then
 		return neuro.classes[what:lower()].new(...)
 	else 
 		error("Could not create object type: "..tostring(what).." from neuro.")

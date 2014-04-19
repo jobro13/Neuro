@@ -1,11 +1,11 @@
 local population = {}
 population.settings = {
-	kill_rate = 0.9 -- If a brain has lower than 0.9 * best fitness, it will die.
+	kill_rate = 0.8 -- If a brain has lower than 0.9 * best fitness, it will die.
 
 }
 population.__index = population
-local genetics = require("Neuro/src/genetics")
-local neuralnet = require "Neuro/src/NeuralNet"
+local genetics = require(script.Parent.genetics)
+local neuralnet = require(script.Parent.NeuralNet)
 
 function population.new()
 	local new = {}
@@ -32,45 +32,29 @@ end
 -- DOES NOT CREATE NEW OBJECTS BUT INSTEAD WRITES TO THE OLD
 -- Evolves every creature with random mums and dads
 function population:Evolve()
-	if self.BestBrain then 
-		--table.insert(self.Brains, self.BestBrain)
-	end
-
+	local bestBrain = self:GetBest()
 	for brain = 1, #self.Brains,2 do 
 
 		local mum, dad = self:GetChromosome(), self:GetChromosome()
 		local chrom_1, chrom_2 = mum:getWeights(), dad:getWeights() 
 
 		local chrom_new_1, chrom_new_2 = genetics.meiosis(chrom_1, chrom_2)
-		
+
 		local baby1 = self.Brains[brain]
 		local baby2 = self.Brains[brain+1]
 
 		baby1:putWeights(chrom_new_1)
-		
+
 		if baby2 then 
 			baby2:putWeights(chrom_new_2)
 		end
 
 	end 
 	-- keep best brain here as we also want to check if it is still the best brain
-	
+
 	-- create a pseudo brain with copies
 
-	local best_brain = self:GetBest()
-
-	local arg1, arg2, arg3, arg4 = best_brain.numInputs, best_brain.numOutputs, best_brain.numHiddenLayers, best_brain.neuronsPerHiddenLayer
-
-	local brain_weight = best_brain:getWeights()
-
-	local bb_available = self.BestBrain ~= nil 
-
---	self.BestBrain = neuralnet.new(arg1,arg2,arg3,arg4)
---	self.BestBrain:putWeights(brain_weight)
---	self.BestBrain.fitness = best_brain.fitness
-	if bb_available then 
-		table.remove(self.Brains)
-	end
+	self.Brains[1]:putWeights(bestBrain:getWeights())
 end 
 
 -- returns the best brain in the population

@@ -1,27 +1,73 @@
-NeuronLayer = require("Neuro/src/NeuronLayer")
 NeuralNet = {}
 NeuralNet.__index = NeuralNet
+
+Neuron = require("Neuro/src/Neuron")
+InputNeuron = require("Neuro/src/InputNeuron")
+Edge = require("Neuro/src/Edge")
 
 function NeuralNet.new(numInputs, numOutputs, numHiddenLayers, neuronsPerHiddenLayer)
 	local neuralNet = {}
 	setmetatable(neuralNet, NeuralNet)
-
-	neuralNet.numInputs = numInputs
-	neuralNet.numOutputs = numOutputs
-	neuralNet.numHiddenLayers = numHiddenLayers
-	neuralNet.neuronsPerHiddenLayer = neuronsPerHiddenLayer
+	
+	neuralNet.inputNeurons = {}
+	neuralNet.hiddenNeurons = {}
+	neuralNet.outputNeurons = {}
+	neuralNet.allEdges = {}
 	neuralNet.fitness = 0
-	neuralNet.layers = {}
-
-
-	table.insert(neuralNet.layers, NeuronLayer.new(neuronsPerHiddenLayer, numInputs))
-	for layernum = 1, numHiddenLayers do
- 		table.insert(neuralNet.layers, NeuronLayer.new(neuronsPerHiddenLayer, neuronsPerHiddenLayer))
+	
+	for i = 1, numInputs do
+		table.insert(neuralNet.inputNeurons, InputNeuron.new(i,neuralNet))
+	end	
+	
+	for _ = 1, numHiddenLayers do
+		for _ = 1, neuronsPerHiddenLayer do
+			table.insert(neuralNet.hiddenNeurons, Neuron.new(neuralNet))
+		end
 	end
-	table.insert(neuralNet.layers,  NeuronLayer.new(numOutputs, numInputs))
+	
+	for _ = 1, numOutputs do
+		table.insert(neuralNet.outputNeurons, Neuron.new(neuralNet))
+	end
 
+	for _, inputNeuron in pairs(neuralNet.inputNeurons) do
+		for i = 1, neuronsPerHiddenLayer do
+			Edge.new(inputNeuron, neuralNet.hiddenNeurons[i],neuralNet)
+		end
+	end
+
+	for layernum = 1, numHiddenLayers-1 do
+		for neuronNum = 1, neuronsPerHiddenLayer do
+			Edge.new(neuralNet.hiddenNeurons[neuronNum * layernum], neuralNet.hiddenNeurons[neuronNum * (layernum + 1)],neuralNet)
+		end
+	end
+
+	if numHiddenLayers == 1 then
+		for hiddennum = 1, neuronsPerHiddenLayer do
+			for outputnum = 1, numOutputs do
+				Edge.new(neuralNet.hiddenNeurons[hiddennum],neuralNet.outputNeurons[outputnum],neuralNet)
+			end
+		end
+	else
+		for hiddennum = (numHiddenLayers - 1) * neuronsPerHiddenLayer, numHiddenLayers * neuronsPerHiddenLayer do
+			for outputnum = 1, numOutputs do
+				Edge.new(neuralNet.hiddenNeurons[hiddennum],neuralNet.outputNeurons[outputnum],neuralNet)
+			end
+		end
+	end
 
 	return neuralNet
+end
+
+function NeuralNet:evaluate(inputs)
+	if #inputs ~= #self.inputNeurons then
+		error("Expected "..#self.inputNeurons.." inputs. Got "..#inputs.." inputs!")
+	end
+	local outputs = {}
+	for _, neuron in pairs(self.outputNeurons) do
+		neuron:clearEvaluateCache()
+		table.insert(outputs, neuron:evaluate(inputs))
+	end
+	return outputs
 end
 
 function NeuralNet:IncreaseFitness(delta)
@@ -35,84 +81,40 @@ end
 
 function NeuralNet:getWeights()
 	local weights = {}
-
-	for _, layer in pairs(self.layers) do
-		for _, neuron in pairs(layer.neurons) do
-			for _, weight in pairs(neuron.weights) do
-				table.insert(weights, weight)
-			end
-		end
+	
+	for _, edge in pairs(self.allEdges) do
+		table.insert(weights, edge.weight)
 	end
-
+	
 	return weights
 end
 
 function NeuralNet:getNumberOfWeights()
-	local num = 0
-
-	for _, layer in pairs(self.layers) do
-		for _, neuron in pairs(layer.neurons) do
-			num = num + #neuron.weights
-		end
-	end
-
-	return num
+	return #self:getWeights()
 end
 
 function NeuralNet:putWeights(weights)
+	for _, edge in pairs(self.allEdges) do
+		edge.weight = weights[1]
+		table.remove(weights,1)
+	end
+end
 
-	for _, layer in pairs(self.layers) do
-		for _, neuron in pairs(layer.neurons) do
-			for index, weight in pairs(neuron.weights) do
-				neuron.weights[index] = weights[1]
-				table.remove(weights, 1)
-			end
-		end
+function NeuralNet.sigmoid(input, bias)
+	return 1 / (1 + math.exp(-input))
+end
+
+function NeuralNet:propagateError(examples)
+	for num, neuron in pairs(self.outputNeurons) do
+		neuron:getError(examples[num])
 	end
 
 end
 
-function NeuralNet:update(inputs)
-	--here be dragons
-	local outputs
-
-	if #inputs ~= self.numInputs then
-		error("Expected " .. self.numInputs .. " inputs. Got " .. #inputs .. " inputs!")
-	end
-
-	for layerNum, layer in pairs(self.layers) do
-
-		if layerNum > 1 then
-			inputs = outputs
-		end
-
-		outputs = {}
-		local weight = 1
-
-		for neuronNum, neuron in pairs(self.layers[layerNum].neurons) do
-			local netInput = 0
-
-			for nNum, nWeight in pairs(neuron.weights) do
-				if nNum < #neuron.weights then
-					netInput = netInput + nWeight * inputs[weight]
-					weight = weight + 1
-				end
-			end
-
-			netInput = netInput + neuron.weights[#neuron.weights] * -1
-			weight = 1
-
-			table.insert(outputs, self.sigmoid(netInput))
-		end
-	end
-
-	return outputs
+function NeuralNet:updateWeights(learningRate)
+	for _, neuron in pairs(self.outputNeurons) do
+		neuron:updateWeights(learningRate)
+	end	
 end
-
-function NeuralNet.sigmoid(input)
-	return 1 / (1 + math.exp(input))
-end
-
-
 
 return NeuralNet

@@ -2,11 +2,11 @@ local genetics = {}
 
 genetics.settings = {
 	-- How much cross overs happen
-	cross_over_rate = 0.5,
+	cross_over_rate = 0.7,
 	-- How much mutations happen
-	mutation_rate = 0.1,
+	mutation_rate = 0.3,
 	-- The maximum mutex per mutation
-	mutation_mutex_max = 0.3
+	mutation_mutex_max = 0.1
 }
 
 genetics.__index = genetics
