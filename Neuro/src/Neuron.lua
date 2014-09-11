@@ -1,7 +1,7 @@
 Neuron = {}
 Neuron.__index = Neuron
 Edge = require("Neuro/src/Edge")
-BiasNeuron = require("Neuro/src/BiasNeuron"))
+BiasNeuron = require("Neuro/src/BiasNeuron")
 
 function Neuron.new(net)
 	local neuron = {}

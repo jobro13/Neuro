@@ -4,8 +4,8 @@ population.settings = {
 
 }
 population.__index = population
-local genetics = require(script.Parent.genetics)
-local neuralnet = require(script.Parent.NeuralNet)
+local genetics = require("Neuro/src/genetics")
+local neuralnet = require("Neuro/src/NeuralNet")
 
 function population.new()
 	local new = {}

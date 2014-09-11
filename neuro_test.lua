@@ -2,7 +2,7 @@ local neuro = require("neuro")
  
 population = neuro.new("population")
 
-local DEBUG = false
+local DEBUG = true
  
 for i = 1 , 2 do
         population:AddBrain(neuro.new("network",1,1,1,2))
@@ -25,7 +25,7 @@ for i = 1, 5000 do
 
 	gprint("------POPULATION: "..i.."-------")
         for _, brain in pairs(population.Brains) do
-                output = brain:update({3})
+                output = brain:evaluate({3})
                 if output[1] > MAX_OUTPUT then 
                 	gprint("Max output has increased: (generation="..i..")")
                 	gprint("From: "..MAX_OUTPUT.. " to: "..output[1].. " (delta="..output[1] - MAX_OUTPUT..")")

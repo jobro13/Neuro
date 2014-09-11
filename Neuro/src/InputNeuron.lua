@@ -41,7 +41,7 @@ function InputNeuron:clearEvaluateCache()
 end
 
 function sigmoid(x)
-	return  1 / (1 + math.exp(-input))
+	return  1 / (1 + math.exp(-x))
 end
 
 
